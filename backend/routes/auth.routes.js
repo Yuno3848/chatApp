@@ -1,8 +1,11 @@
 import { Router } from "express";
 import { signup, login, logout } from "../controllers/auth.controllers.js";
+import { upload } from "../middleware/multer.middleware.js";
+import { isLogged } from "../middleware/authMid.middlewares.js";
+
 const router = Router();
 
-router.get("/signup", signup);
+router.post("/signup", upload.single("avatar"), signup);
 router.get("/login", login);
-router.get("/logout", logout);
+router.get("/logout", isLogged, logout);
 export default router;
