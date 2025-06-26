@@ -16,6 +16,7 @@ export const isLogged = (req, res, next) => {
     const decode = jwt.verify(token, process.env.SECRET_KEY);
 
     req.user = decode;
+    console.log(req.user);
     next();
   } catch (error) {
     return res.status(401).json({
