@@ -5,10 +5,12 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import cookie from "cookie-parser";
 export const signup = asyncHandler(async (req, res) => {
-  const { email, username, fullname, password, confirmPassword, gender } =
+  const { username, fullname, password, confirmPassword, gender, email } =
     req.body;
+
+  // Validate required fields
   if (
-    [email, username, fullname, password, confirmPassword, gender].some(
+    [username, fullname, password, confirmPassword, gender, email].some(
       (field) => field?.trim() === ""
     )
   ) {
@@ -20,51 +22,45 @@ export const signup = asyncHandler(async (req, res) => {
   }
 
   if (password !== confirmPassword) {
-    throw new ApiError(400, "Password don't match");
+    throw new ApiError(400, "Passwords do not match");
   }
 
   const isUser = await User.findOne({ username });
   if (isUser) {
-    throw new ApiError(400, "user already exists");
+    throw new ApiError(400, "User already exists");
   }
 
-  const avatarPath = req.file?.path;
-  const avatar = await uploadOnCloudinary(avatarPath);
-  console.log("avatar", avatar);
-  if (!avatar) {
-    throw new ApiError(404, "avatar is required");
-  }
-
-  // console.log("avatar", avatar);
+  // Create user without avatar
   const user = await User.create({
-    email,
     username,
     fullname,
     password,
     gender,
-    profilePic: { url: avatar.url, localPath: avatarPath },
+    email,
   });
 
   if (!user) {
-    throw new ApiError(505, "Error while creating user....");
+    throw new ApiError(500, "Error while creating user...");
   }
+
   const token = user.generateToken();
   if (!token) {
-    throw new ApiError(400, "user token not generated...");
+    throw new ApiError(400, "User token not generated...");
   }
+
   const cookieOptions = {
     maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: process.env.NODE_ENV != "DEVELOPMENT",
+    secure: process.env.NODE_ENV !== "DEVELOPMENT",
   };
 
   await user.save();
+
   return res
     .status(201)
     .cookie("jwt", token, cookieOptions)
-    .json(new ApiResponse(201, "signed up successfully...", user));
+    .json(new ApiResponse(201, "Signed up successfully", user));
 });
-
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   if ([email, password].some((field) => field.trim() === "")) {

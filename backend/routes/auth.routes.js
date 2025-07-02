@@ -5,7 +5,7 @@ import { isLogged } from "../middleware/authMid.middlewares.js";
 
 const router = Router();
 
-router.post("/signup", upload.single("avatar"), signup);
+router.post("/signup", signup);
 router.post("/login", login);
 router.get("/logout", isLogged, logout);
 export default router;
