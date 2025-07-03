@@ -114,8 +114,15 @@ const SignUp = () => {
             </Link>
           </div>
 
-          <button className="btn btn-primary btn-md w-full hover:scale-[1.02] transition-transform">
-            Sign Up
+          <button
+            className="btn btn-primary btn-md w-full hover:scale-[1.02] transition-transform"
+            disabled={loading}
+          >
+            {loading ? (
+              <span className="loading loading-spinner"></span>
+            ) : (
+              "Sign Up"
+            )}
           </button>
         </form>
       </div>
