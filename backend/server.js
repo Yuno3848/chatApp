@@ -4,7 +4,9 @@ import dotenv from "dotenv";
 import app from "./app.js";
 import { db } from "./db/db.js";
 
-dotenv.config();
+dotenv.config({
+  path: "../.env",
+});
 
 const PORT = process.env.PORT || 3000;
 

@@ -9,12 +9,12 @@ const useGetConversations = () => {
     const getConversations = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/user");
+        const res = await fetch("/api/user/get-user-profile");
         const data = await res.json();
         if (data.error) {
           throw new Error(data.error);
         }
-        setConversations(data);
+        setConversations(data.data);
       } catch (error) {
         toast.error(error.message);
       } finally {
